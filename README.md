@@ -1,34 +1,35 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg)
+# FROG 4-bit CPU
 
-# What is Tiny Tapeout?
+The FROG is a tiny 4-bit processor intended to be incorporated into the [TinyTapeout](https://mailchi.mp/574276e3c9d7/tinytapeout) multi-project chip on a multi-project wafer
 
-TinyTapeout is an educational project that aims to make it easier and cheaper than ever to get your digital designs manufactured on a real chip!
+The FROG is an extremely minimal load-store 4-bit CPU.  Specified, designed, and tested in less than a day (given I discovered TinyTapeout with 36 hours remaining), several structures were simplified for speed of design.
 
-Go to https://tinytapeout.com for instructions!
+### ISA
 
-## How to change the Wokwi project
+**Registers**: 4-bit, A and B
+**ALU Width**: 4-bit
+**Address Width**: 7-bit
+**Instructions**: 15+NOP
 
-Edit the [info.yaml](info.yaml) and change the wokwi_id to match your project.
+| OPCode | Hex | Description|
+| --- | --- | --- |
+NGA      | 0             | 2's complement negation of A
+AND      | 1             | A = A AND B
+OR       | 2             | A = A OR B
+XOR      | 3             | A = A XOR B
+SLL      | 4             | A = A << B
+SRL      | 5             | A = A >> B
+SRA      | 6             | A = A >> B (preserve sign)
+ADD      | 7             | A = A + B
+NOP      | 8             | No Operation
+BEQ ofst | 9 AddrH AddrL | If A == B, PC = PC + offset
+BLE ofst | A AddrH AddrL | If A <= B, PC = PC + offset
+JMP addr | B AddrH AddrL | PC = addr
+LDA addr | C AddrH AddrL | A = [addr]
+LDB addr | D AddrH AddrL | B = [addr]
+STA addr | E AddrH AddrL | [addr] = A
+STB addr | F AddrH AddrL | [addr] = B
 
-## How to enable the GitHub actions to build the ASIC files
+![](gds_render.png) 
 
-Please see the instructions for:
-
-* [Enabling GitHub Actions](https://tinytapeout.com/faq/#when-i-commit-my-change-the-gds-action-isnt-running)
-* [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
-
-## How does it work?
-
-When you edit the info.yaml to choose a different ID, the [GitHub Action](.github/workflows/gds.yaml) will fetch the digital netlist of your design from Wokwi.
-
-After that, the action uses the open source ASIC tool called [OpenLane](https://www.zerotoasiccourse.com/terminology/openlane/) to build the files needed to fabricate an ASIC.
-
-## Resources
-
-* [FAQ](https://tinytapeout.com/faq/)
-* [Digital design lessons](https://tinytapeout.com/digital_design/)
-* [Join the community](https://discord.gg/rPK2nSjxy8)
-
-## What next?
-
-* Share your GDS on Twitter, tag it [#tinytapeout](https://twitter.com/hashtag/tinytapeout?src=hashtag_click) and [link me](https://twitter.com/matthewvenn)!
+The [Makefile](Makefile) has been modified to support the same github action as the template repository without actually pulling from Wokwi.
